@@ -21,6 +21,8 @@ var (
 	Stderr = &File{unixFileHandle(2), "/dev/stderr"}
 )
 
+const DevNull = "/dev/null"
+
 // isOS indicates whether we're running on a real operating system with
 // filesystem support.
 const isOS = true
@@ -111,4 +113,21 @@ func handleSyscallError(err error) error {
 	default:
 		return err
 	}
+}
+
+func Pipe() (r *File, w *File, err error) {
+	var p [2]int
+	err = handleSyscallError(syscall.Pipe2(p[:], syscall.O_CLOEXEC))
+	if err != nil {
+		return
+	}
+	r = &File{
+		handle: unixFileHandle(p[0]),
+		name:   "|0",
+	}
+	w = &File{
+		handle: unixFileHandle(p[1]),
+		name:   "|1",
+	}
+	return
 }

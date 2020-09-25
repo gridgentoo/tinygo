@@ -196,6 +196,7 @@ test: wasi-libc
 
 TEST_PACKAGES = \
 	compress/bzip2 \
+	compress/zlib \
 	container/heap \
 	container/list \
 	container/ring \
