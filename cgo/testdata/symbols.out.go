@@ -4,6 +4,18 @@ import "unsafe"
 
 var _ unsafe.Pointer
 
+//go:linkname C.CString runtime.cgo_CString
+func C.CString(string) *C.char
+
+//go:linkname C.GoString runtime.cgo_GoString
+func C.GoString(*C.char) string
+
+//go:linkname C.GoStringN runtime.cgo_GoStringN
+func C.GoStringN(*C.char, C.int) string
+
+//go:linkname C.GoBytes runtime.cgo_GoBytes
+func C.GoBytes(unsafe.Pointer, C.int) []byte
+
 //export foo
 func C.foo(a C.int, b C.int) C.int
 

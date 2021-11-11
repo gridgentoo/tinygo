@@ -169,6 +169,14 @@ const generatedGoFilePrefix = `
 import "unsafe"
 
 var _ unsafe.Pointer
+
+func CString(string) *C.char
+
+func GoString(*C.char) string
+
+func GoStringN(*C.char, C.int) string
+
+func GoBytes(unsafe.Pointer, C.int) []byte
 `
 
 // Process extracts `import "C"` statements from the AST, parses the comment
@@ -219,6 +227,31 @@ func Process(files []*ast.File, dir string, fset *token.FileSet, cflags []string
 		// This is always a bug in the cgo package.
 		panic("unexpected error: " + err.Error())
 	}
+	// Adjust some of the functions in there.
+	for _, decl := range p.generated.Decls {
+		switch decl := decl.(type) {
+		case *ast.FuncDecl:
+			switch decl.Name.Name {
+			case "CString", "GoString", "GoStringN", "GoBytes":
+				// It would be nicer to declare the //go:linkname directly in
+				// the source, but for some reason that causes later comments to
+				// disappear from test outputs. Therefore, do it in code.
+				decl.Doc = &ast.CommentGroup{
+					List: []*ast.Comment{
+						{
+							Slash: decl.Pos() - 1,
+							Text:  "//go:linkname C." + decl.Name.Name + " runtime.cgo_" + decl.Name.Name,
+						},
+					},
+				}
+				// Adjust the name to have a "C." prefix so it is correctly
+				// resolved.
+				decl.Name.Name = "C." + decl.Name.Name
+			}
+		}
+	}
+	// Patch some types, for example *C.char in C.CString.
+	astutil.Apply(p.generated, p.walker, nil)
 
 	// Find all C.* symbols.
 	for _, f := range files {

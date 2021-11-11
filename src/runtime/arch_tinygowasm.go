@@ -11,6 +11,9 @@ const GOARCH = "wasm"
 // The bitness of the CPU (e.g. 8, 32, 64).
 const TargetBits = 32
 
+// The type of a C int.
+type cint int32
+
 //go:extern __heap_base
 var heapStartSymbol [0]byte
 
