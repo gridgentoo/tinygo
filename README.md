@@ -1,3 +1,7 @@
+Оригинальный репозиторий.  
+https://github.com/tinygo-org/tinygo
+
+
 # TinyGo - Go compiler for small places
 
 [![CircleCI](https://circleci.com/gh/tinygo-org/tinygo/tree/dev.svg?style=svg)](https://circleci.com/gh/tinygo-org/tinygo/tree/dev) [![Build Status](https://dev.azure.com/tinygo/tinygo/_apis/build/status/tinygo-CI?branchName=dev)](https://dev.azure.com/tinygo/tinygo/_build/latest?definitionId=1&branchName=dev)
